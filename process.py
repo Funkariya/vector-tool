@@ -4,11 +4,11 @@ import os
 def convert_to_svg(
     input_path,
     output_svg,
-    detail="medium",       # low | medium | high
-    color_mode="full",     # bw | limited | full
+    detail="medium",
+    color_mode="full",
     remove_bg=True
 ):
-    detail_scans = {
+    scans = {
         "low": "4",
         "medium": "8",
         "high": "12"
@@ -19,30 +19,26 @@ def convert_to_svg(
         input_path,
         "--export-type=svg",
         f"--export-filename={output_svg}",
-        "--trace-bitmap",
-        "--trace-smooth",
-        "--trace-optimize"
+        "--actions="
     ]
 
-    # COLOR MODES
+    actions = []
+
+    # VECTOR TRACE
     if color_mode == "bw":
-        cmd.append("--trace-brightness")
+        actions.append("TraceBitmap;TraceBrightnessCutoff;")
 
     elif color_mode == "limited":
-        cmd += [
-            "--trace-colors",
-            "--trace-scans=6"
-        ]
+        actions.append(f"TraceBitmap;TraceColors:{scans};")
 
-    elif color_mode == "full":
-        cmd += [
-            "--trace-colors",
-            f"--trace-scans={detail_scans}",
-            "--trace-stack"
-        ]
+    else:  # full color
+        actions.append(f"TraceBitmap;TraceColors:{scans};")
 
-    # REMOVE BACKGROUND
     if remove_bg:
-        cmd.append("--trace-remove-background")
+        actions.append("TraceRemoveBackground;")
+
+    actions.append("FileSave;FileClose")
+
+    cmd[-1] += "".join(actions)
 
     subprocess.run(cmd, check=True)
