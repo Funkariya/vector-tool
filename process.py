@@ -1,27 +1,27 @@
 import subprocess
 import os
 
-def convert_to_svg(input_path, output_svg):
-    """
-    Full color, smooth vectorization (Vector Magic style)
-    """
+def convert_to_svg(input_path, output_svg, detail="medium", remove_bg=True):
+    scans = {
+        "low": "4",
+        "medium": "8",
+        "high": "12"
+    }.get(detail, "8")
 
-    if not os.path.exists(input_path):
-        raise Exception("Input image not found")
+    command = [
+        "inkscape",
+        input_path,
+        "--export-type=svg",
+        f"--export-filename={output_svg}",
+        "--trace-bitmap",
+        "--trace-colors",
+        f"--trace-scans={scans}",
+        "--trace-smooth",
+        "--trace-optimize",
+        "--trace-stack"
+    ]
 
-    subprocess.run(
-        [
-            "inkscape",
-            input_path,
-            "--export-type=svg",
-            f"--export-filename={output_svg}",
-            "--trace-bitmap",
-            "--trace-colors",
-            "--trace-scans=8",
-            "--trace-smooth",
-            "--trace-optimize",
-            "--trace-stack",
-            "--trace-remove-background"
-        ],
-        check=True
-    )
+    if remove_bg:
+        command.append("--trace-remove-background")
+
+    subprocess.run(command, check=True)
