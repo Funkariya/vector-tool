@@ -14,27 +14,25 @@ os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 def index():
     if request.method == "POST":
         file = request.files["image"]
-
-        detail = request.form.get("detail", "medium")
-        color_mode = request.form.get("color_mode", "full")
-        remove_bg = "remove_bg" in request.form
+        if not file:
+            return "No file uploaded", 400
 
         input_path = os.path.join(UPLOAD_FOLDER, file.filename)
         output_svg = os.path.join(OUTPUT_FOLDER, "result.svg")
 
         file.save(input_path)
 
-        convert_to_svg(
-            input_path,
-            output_svg,
-            detail=detail,
-            color_mode=color_mode,
-            remove_bg=remove_bg
-        )
+        # ✅ YAHI ADD KARNA THA
+        colors = int(request.form.get("colors", 6))
+        smooth = float(request.form.get("smooth", 1.0))
+        remove_bg = request.form.get("bg") == "remove"
+
+        convert_to_svg(input_path, output_svg, colors, smooth, remove_bg)
 
         return send_file(output_svg, as_attachment=True)
 
     return render_template("index.html")
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
