@@ -1,36 +1,27 @@
-import cv2
 import subprocess
 import os
 
 def convert_to_svg(input_path, output_svg):
-    img = cv2.imread(input_path)
+    """
+    Full color, smooth vectorization (Vector Magic style)
+    """
 
-    if img is None:
-        raise Exception("Image not loaded")
-
-    # Resize for better tracing
-    img = cv2.resize(img, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
-
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-    _, thresh = cv2.threshold(
-        gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU
-    )
-
-    bmp_path = "outputs/bw.bmp"
-    cv2.imwrite(bmp_path, thresh)
+    if not os.path.exists(input_path):
+        raise Exception("Input image not found")
 
     subprocess.run(
         [
-            "potrace",
-            bmp_path,
-            "-s",
-            "-o",
-            output_svg,
-            "--turdsize",
-            "5",
-            "--alphamax",
-            "1.0",
+            "inkscape",
+            input_path,
+            "--export-type=svg",
+            f"--export-filename={output_svg}",
+            "--trace-bitmap",
+            "--trace-colors",
+            "--trace-scans=8",
+            "--trace-smooth",
+            "--trace-optimize",
+            "--trace-stack",
+            "--trace-remove-background"
         ],
-        check=True,
+        check=True
     )
