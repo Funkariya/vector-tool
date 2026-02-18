@@ -1,36 +1,198 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Image to Vector</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Image to Vector Converter</title>
+
+<style>
+:root{
+  --bg:#1f2a33;
+  --card:#2c3a45;
+  --accent:#f6a623;
+  --text:#ffffff;
+  --muted:#b0bec5;
+}
+
+*{box-sizing:border-box;font-family:Segoe UI,Roboto,Arial}
+
+body{
+  margin:0;
+  background:linear-gradient(135deg,#1f2a33,#111820);
+  color:var(--text);
+}
+
+.header{
+  padding:40px 20px;
+  text-align:center;
+}
+
+.header h1{
+  margin:0;
+  font-size:36px;
+}
+
+.header p{
+  color:var(--muted);
+  margin-top:10px;
+}
+
+.container{
+  max-width:1000px;
+  margin:auto;
+  padding:20px;
+}
+
+.upload-card{
+  background:var(--card);
+  border-radius:14px;
+  padding:30px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:30px;
+}
+
+.drop-zone{
+  border:2px dashed #546e7a;
+  border-radius:12px;
+  padding:40px 20px;
+  text-align:center;
+  transition:.3s;
+}
+
+.drop-zone:hover{
+  border-color:var(--accent);
+}
+
+.drop-zone h3{
+  margin:0 0 10px;
+}
+
+.drop-zone input{
+  display:none;
+}
+
+.pick-btn{
+  background:var(--accent);
+  color:#000;
+  border:none;
+  padding:12px 20px;
+  border-radius:8px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.options{
+  display:grid;
+  gap:15px;
+}
+
+.option-group{
+  background:#22303a;
+  padding:15px;
+  border-radius:10px;
+}
+
+.option-group label{
+  display:block;
+  margin-bottom:6px;
+  color:var(--muted);
+}
+
+select{
+  width:100%;
+  padding:10px;
+  border-radius:6px;
+  border:none;
+}
+
+.convert-btn{
+  margin-top:20px;
+  width:100%;
+  padding:14px;
+  font-size:16px;
+  font-weight:700;
+  background:linear-gradient(135deg,#f6a623,#ffcc70);
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+footer{
+  text-align:center;
+  padding:20px;
+  color:#90a4ae;
+  font-size:13px;
+}
+
+@media(max-width:800px){
+  .upload-card{
+    grid-template-columns:1fr;
+  }
+}
+</style>
 </head>
+
 <body>
 
-<h2>Upload Image</h2>
+<div class="header">
+  <h1>Image → Vector Converter</h1>
+  <p>Convert JPG, PNG to high-quality SVG instantly</p>
+</div>
 
-<form method="POST" enctype="multipart/form-data">
-    <input type="file" name="image" required><br><br>
+<div class="container">
+<form action="/" method="POST" enctype="multipart/form-data">
 
-    <label>Detail Level</label><br>
-    <select name="detail">
-        <option value="low">Low</option>
-        <option value="medium" selected>Medium</option>
-        <option value="high">High</option>
-    </select><br><br>
+  <div class="upload-card">
 
-    <label>Color Mode</label><br>
-    <select name="color_mode">
-        <option value="bw">Black & White</option>
-        <option value="limited">Limited Colors</option>
-        <option value="full" selected>Full Color</option>
-    </select><br><br>
+    <!-- LEFT -->
+    <div class="drop-zone" onclick="document.getElementById('file').click()">
+      <h3>Drag Image Here</h3>
+      <p>or</p>
+      <button type="button" class="pick-btn">Pick Image</button>
+      <input id="file" type="file" name="image" accept=".png,.jpg,.jpeg,.bmp" required>
+    </div>
 
-    <label>
-        <input type="checkbox" name="remove_bg" checked>
-        Remove Background
-    </label><br><br>
+    <!-- RIGHT -->
+    <div class="options">
 
-    <button type="submit">Convert</button>
+      <div class="option-group">
+        <label>Detail Level</label>
+        <select name="detail">
+          <option value="low">Low (Fast)</option>
+          <option value="medium" selected>Medium</option>
+          <option value="high">High (Best)</option>
+        </select>
+      </div>
+
+      <div class="option-group">
+        <label>Color Mode</label>
+        <select name="color">
+          <option value="full">Full Color</option>
+          <option value="limited">Limited Colors</option>
+          <option value="bw">Black & White</option>
+        </select>
+      </div>
+
+      <div class="option-group">
+        <label>Background</label>
+        <select name="bg">
+          <option value="remove">Remove Background</option>
+          <option value="keep">Keep Background</option>
+        </select>
+      </div>
+
+      <button class="convert-btn">Convert to Vector</button>
+
+    </div>
+  </div>
+
 </form>
+</div>
+
+<footer>
+  © Image Vector Tool • Free & Open Source
+</footer>
 
 </body>
 </html>
