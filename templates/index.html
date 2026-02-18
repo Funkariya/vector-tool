@@ -193,6 +193,23 @@ footer{
 <footer>
   © Image Vector Tool • FUNKARIYA
 </footer>
+
+  <label>Detail Level</label>
+<select name="colors">
+  <option value="3">Low</option>
+  <option value="6" selected>Medium</option>
+  <option value="12">High</option>
+</select>
+
+<label>Edge Smoothness</label>
+<input type="range" name="smooth" min="0.5" max="2.0" step="0.1" value="1.0">
+
+<label>Background</label>
+<select name="bg">
+  <option value="remove">Remove</option>
+  <option value="keep">Keep</option>
+</select>
+
 <script>
 const dropZone = document.getElementById("drop-zone");
 const fileInput = document.getElementById("file-input");
