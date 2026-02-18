@@ -8,28 +8,22 @@ def convert_to_svg(input_path, output_svg):
     if img is None:
         raise Exception("Image not loaded")
 
-    # upscale for better tracing
+    # Resize for better tracing
     img = cv2.resize(img, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
 
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    blur = cv2.bilateralFilter(gray, 9, 75, 75)
 
-    thresh = cv2.adaptiveThreshold(
-        blur,
-        255,
-        cv2.ADAPTIVE_THRESH_MEAN_C,
-        cv2.THRESH_BINARY,
-        11,
-        2
+    _, thresh = cv2.threshold(
+        gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU
     )
 
-    bw_path = "outputs/bw.png"
-    cv2.imwrite(bw_path, thresh)
+    bmp_path = "outputs/bw.bmp"
+    cv2.imwrite(bmp_path, thresh)
 
     subprocess.run(
         [
             "potrace",
-            bw_path,
+            bmp_path,
             "-s",
             "-o",
             output_svg,
@@ -40,4 +34,3 @@ def convert_to_svg(input_path, output_svg):
         ],
         check=True,
     )
-
