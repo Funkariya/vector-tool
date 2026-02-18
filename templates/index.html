@@ -2,14 +2,35 @@
 <html>
 <head>
   <title>Image to Vector</title>
+  <style>
+    body { font-family: Arial; background:#f5f5f5; }
+    .box { background:white; padding:30px; width:400px; margin:50px auto; border-radius:10px; }
+    button { padding:10px 20px; cursor:pointer; }
+  </style>
 </head>
 <body>
-  <h2>Upload Image</h2>
+
+<div class="box">
+  <h2>Image to Vector</h2>
 
   <form method="post" enctype="multipart/form-data">
-    <input type="file" name="image" required>
+    <input type="file" name="image" required><br><br>
+
+    <label>Detail Level</label><br>
+    <select name="detail">
+      <option value="low">Low</option>
+      <option value="medium" selected>Medium</option>
+      <option value="high">High</option>
+    </select><br><br>
+
+    <label>
+      <input type="checkbox" name="remove_bg" checked>
+      Remove background
+    </label><br><br>
+
     <button type="submit">Convert</button>
   </form>
+</div>
 
 </body>
 </html>
