@@ -191,8 +191,27 @@ footer{
 </div>
 
 <footer>
-  © Image Vector Tool • Free & Open Source
+  © Image Vector Tool • FUNKARIYA
 </footer>
+<script>
+const dropZone = document.getElementById("drop-zone");
+const fileInput = document.getElementById("file-input");
+
+dropZone.addEventListener("dragover", e => {
+  e.preventDefault();
+  dropZone.classList.add("hover");
+});
+
+dropZone.addEventListener("dragleave", () => {
+  dropZone.classList.remove("hover");
+});
+
+dropZone.addEventListener("drop", e => {
+  e.preventDefault();
+  dropZone.classList.remove("hover");
+  fileInput.files = e.dataTransfer.files;
+});
+</script>
 
 </body>
 </html>
