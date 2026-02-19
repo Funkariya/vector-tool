@@ -6,7 +6,7 @@ def convert_to_svg(input_img, output_svg, colors=6, smooth=1.0, remove_bg=True):
 
     temp_pbm = f"/tmp/{uuid.uuid4().hex}.pbm"
 
-    # STEP 1: Image cleanup + high-contrast bitmap
+    # Convert image → clean bitmap
     magick_cmd = [
         "magick", input_img,
         "-resize", "2000x2000>",
@@ -15,10 +15,9 @@ def convert_to_svg(input_img, output_svg, colors=6, smooth=1.0, remove_bg=True):
         "-threshold", "55%",
         temp_pbm
     ]
-
     subprocess.run(magick_cmd, check=True)
 
-    # STEP 2: TRUE vector tracing (real paths)
+    # True vector tracing
     potrace_cmd = [
         "potrace",
         temp_pbm,
@@ -28,7 +27,6 @@ def convert_to_svg(input_img, output_svg, colors=6, smooth=1.0, remove_bg=True):
         "-a", str(smooth),
         "-O", "0.2"
     ]
-
     subprocess.run(potrace_cmd, check=True)
 
     os.remove(temp_pbm)
