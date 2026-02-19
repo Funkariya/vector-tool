@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, send_file
 import os
 from process import convert_to_svg
-from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
@@ -15,29 +14,43 @@ os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 def index():
     return render_template("index.html")
 
+
 @app.route("/convert", methods=["POST"])
 def convert():
-
     if "image" not in request.files:
-        return "No file", 400
+        return "No image uploaded", 400
 
     file = request.files["image"]
     if file.filename == "":
-        return "No filename", 400
+        return "Empty filename", 400
 
-    filename = secure_filename(file.filename)
-    input_path = os.path.join(UPLOAD_FOLDER, filename)
-    file.save(input_path)
-
+    # OPTIONS FROM UI
     colors = int(request.form.get("colors", 6))
     smooth = float(request.form.get("smooth", 1.0))
-    remove_bg = request.form.get("bg") == "remove"
+    bg = request.form.get("bg", "remove")
 
+    input_path = os.path.join(UPLOAD_FOLDER, file.filename)
     output_svg = os.path.join(OUTPUT_FOLDER, "result.svg")
 
-    convert_to_svg(input_path, output_svg, colors, smooth, remove_bg)
+    file.save(input_path)
 
-    return send_file(output_svg, as_attachment=True)
+    # ⚠️ SAFE CALL (no hang)
+    convert_to_svg(
+        input_path=input_path,
+        output_svg=output_svg,
+        colors=colors,
+        smooth=smooth,
+        remove_bg=(bg == "remove")
+    )
+
+    # 🔥 IMMEDIATE DOWNLOAD
+    return send_file(
+        output_svg,
+        as_attachment=True,
+        download_name="vector.svg",
+        mimetype="image/svg+xml"
+    )
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
