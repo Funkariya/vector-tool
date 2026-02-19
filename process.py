@@ -1,26 +1,38 @@
 import subprocess
 import os
-import uuid
+import shutil
 
-def convert_to_svg(input_path, output_svg, colors=6, smooth=1.0, remove_bg=True):
-    tmp_svg = f"outputs/tmp_{uuid.uuid4().hex}.svg"
+def convert_to_svg(input_img, output_svg, colors, smooth, remove_bg):
+    """
+    input_img  : uploaded raster image path
+    output_svg : final svg output path
+    colors     : number of colors (2,4,6,8)
+    smooth     : edge smoothness (0.5 – 2.0)
+    remove_bg  : True / False
+    """
+
+    # Safety check
+    if not os.path.exists(input_img):
+        raise FileNotFoundError("Input image not found")
+
+    # Potrace works best on PGM/PPM → future ready
+    # For now direct PNG works (basic)
 
     cmd = [
-        "inkscape",
-        input_path,
-        "--export-type=svg",
-        f"--export-filename={tmp_svg}",
-        "--trace-bitmap",
-        "--trace-smooth",
-        "--trace-optimize",
-        f"--trace-colors={colors}",
-        f"--trace-smooth-threshold={smooth}",
+        "potrace",
+        input_img,
+        "-s",                 # SVG output
+        "-o", output_svg,
+        "--turdsize", "2",    # remove small noise
+        "--alphamax", str(smooth),  # EDGE smoothness
+        "--opttolerance", "0.4"
     ]
 
-    if remove_bg:
-        cmd.append("--trace-remove-background")
+    # NOTE:
+    # Potrace does NOT truly support "colors"
+    # Colors handling = Phase-3 (quantization before trace)
 
-    # ⏱️ TIMEOUT = no infinite loading
-    subprocess.run(cmd, check=True, timeout=25)
-
-    os.replace(tmp_svg, output_svg)
+    try:
+        subprocess.run(cmd, check=True)
+    except subprocess.CalledProcessError as e:
+        raise RuntimeError("Vector conversion failed") from e
