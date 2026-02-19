@@ -1,139 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>Image → Vector Converter</title>
-
-<style>
-body{
-  margin:0;
-  font-family: Arial, sans-serif;
-  background:#0e1620;
-  color:#fff;
-}
-
-.container{
-  max-width:850px;
-  margin:80px auto;
-  background:#1f2d38;
-  border-radius:12px;
-  padding:30px;
-}
-
-h1{text-align:center;}
-.subtitle{text-align:center;opacity:.7;margin-bottom:25px;}
-
-.form-box{display:flex;gap:25px;}
-
-.drop-zone{
-  flex:1;
-  border:2px dashed #556;
-  border-radius:10px;
-  padding:25px;
-  text-align:center;
-}
-
-.drop-zone.hover{background:#16222b}
-
-input[type=file]{
-  width:100%;
-  padding:10px;
-  background:#111;
-  color:#fff;
-  border-radius:6px;
-  border:none;
-  margin-top:15px;
-}
-
-.controls{flex:1}
-
-select,button{
-  width:100%;
-  padding:12px;
-  margin-bottom:15px;
-  border-radius:6px;
-  border:none;
-}
-
-button{
-  background:#ffb84d;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-.footer{text-align:center;font-size:13px;opacity:.5}
-</style>
+  <title>Image Upload Test</title>
 </head>
-
 <body>
 
-<div class="container">
-<h1>Image → Vector Converter</h1>
-<div class="subtitle">Guaranteed Working Upload</div>
+<h2>Upload Image (TEST MODE)</h2>
 
 <form method="POST" enctype="multipart/form-data">
-
-<div class="form-box">
-
-<!-- LEFT -->
-<div class="drop-zone" id="drop-zone">
-  <b>Drag Image Here</b>
-  <p>or click below</p>
-
-  <!-- 🔥 REAL FILE INPUT -->
-  <input type="file" name="image" id="file-input" required>
-</div>
-
-<!-- RIGHT -->
-<div class="controls">
-  <label>Colors</label>
-  <select name="colors">
-    <option value="3">3</option>
-    <option value="5">5</option>
-    <option value="6" selected>6</option>
-  </select>
-
-  <label>Smoothness</label>
-  <select name="smooth">
-    <option value="0.6">Low</option>
-    <option value="1.0" selected>Medium</option>
-    <option value="1.5">High</option>
-  </select>
-
-  <label>Background</label>
-  <select name="bg">
-    <option value="keep">Keep</option>
-    <option value="remove" selected>Remove</option>
-  </select>
-
-  <button type="submit">Convert to Vector</button>
-</div>
-
-</div>
+  <input type="file" name="image" required>
+  <br><br>
+  <button type="submit">Upload</button>
 </form>
-
-<div class="footer">© FUNKARIYA Vector Tool</div>
-</div>
-
-<script>
-const dropZone = document.getElementById("drop-zone");
-const fileInput = document.getElementById("file-input");
-
-dropZone.addEventListener("dragover", e=>{
-  e.preventDefault();
-  dropZone.classList.add("hover");
-});
-
-dropZone.addEventListener("dragleave", ()=>{
-  dropZone.classList.remove("hover");
-});
-
-dropZone.addEventListener("drop", e=>{
-  e.preventDefault();
-  dropZone.classList.remove("hover");
-  fileInput.files = e.dataTransfer.files;
-});
-</script>
 
 </body>
 </html>
