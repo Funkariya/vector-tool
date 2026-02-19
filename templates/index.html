@@ -59,11 +59,6 @@ h1 {
   background: rgba(255,183,3,.08);
 }
 
-#drop-zone p {
-  margin: 0 0 10px;
-  color: #b7c7d6;
-}
-
 .pick-btn {
   background: linear-gradient(135deg, #ffb703, #ff9800);
   color: #000;
@@ -89,7 +84,6 @@ input[type=file] {
   border: 1px solid #2d3b48;
 }
 
-/* OPTIONS */
 .option {
   margin-bottom: 18px;
 }
@@ -98,7 +92,6 @@ label {
   display: block;
   margin-bottom: 6px;
   color: #bcd;
-  font-size: 14px;
 }
 
 select, input[type=range] {
@@ -117,7 +110,6 @@ select, input[type=range] {
 }
 
 .convert-btn {
-  margin-top: 20px;
   width: 100%;
   padding: 14px;
   border-radius: 10px;
@@ -143,7 +135,7 @@ footer {
   <h1>Image → Vector Converter</h1>
   <div class="subtitle">Convert JPG, PNG to high-quality SVG</div>
 
-  <form method="POST" enctype="multipart/form-data">
+  <form action="/convert" method="POST" enctype="multipart/form-data">
     <div class="main">
 
       <!-- LEFT -->
@@ -151,8 +143,12 @@ footer {
         <div id="drop-zone">
           <p><strong>Drag image here</strong></p>
           <p>or</p>
-          <button type="button" class="pick-btn" onclick="fileInput.click()">Pick Image</button>
-          <input id="file-input" type="file" name="image" accept="image/*" required />
+
+          <button type="button" class="pick-btn" id="pickBtn">
+            Pick Image
+          </button>
+
+          <input id="fileInput" type="file" name="image" accept="image/*" required>
         </div>
 
         <div class="preview" id="preview">
@@ -162,58 +158,49 @@ footer {
 
       <!-- RIGHT -->
       <div>
-        <div class="option">
-          <label>Detail Level</label>
-          <select name="detail">
-            <option value="low">Low</option>
-            <option value="medium" selected>Medium</option>
-            <option value="high">High</option>
-          </select>
-        </div>
 
         <div class="option">
-          <label>Color Mode</label>
+          <label>Colors</label>
           <select name="colors">
-            <option value="2">2 Colors</option>
-            <option value="4">4 Colors</option>
-            <option value="6" selected>6 Colors</option>
-            <option value="8">8 Colors</option>
+            <option value="2">2</option>
+            <option value="4">4</option>
+            <option value="6" selected>6</option>
+            <option value="8">8</option>
           </select>
         </div>
 
         <div class="option">
           <label>Edge Smoothness</label>
-          <input type="range" name="smooth" min="0.5" max="2" step="0.1" value="1.0"
-                 oninput="smoothVal.innerText=this.value">
-          <div class="range-value">Value: <span id="smoothVal">1.0</span></div>
+          <input type="range" name="smooth" min="0.5" max="2" step="0.1" value="1.0">
         </div>
 
         <div class="option">
           <label>Background</label>
           <select name="bg">
-            <option value="keep">Keep Background</option>
-            <option value="remove" selected>Remove Background</option>
+            <option value="keep">Keep</option>
+            <option value="remove" selected>Remove</option>
           </select>
         </div>
 
         <button class="convert-btn" type="submit">
           Convert to Vector
         </button>
-      </div>
 
+      </div>
     </div>
   </form>
 
-  <footer>
-    © Image Vector Tool · FUNKARIYA
-  </footer>
+  <footer>© Image Vector Tool · FUNKARIYA</footer>
 </div>
 
 <script>
 const dropZone = document.getElementById("drop-zone");
-const fileInput = document.getElementById("file-input");
+const fileInput = document.getElementById("fileInput");
 const preview = document.getElementById("preview");
 const previewImg = document.getElementById("preview-img");
+const pickBtn = document.getElementById("pickBtn");
+
+pickBtn.onclick = () => fileInput.click();
 
 dropZone.addEventListener("dragover", e => {
   e.preventDefault();
@@ -227,17 +214,22 @@ dropZone.addEventListener("dragleave", () => {
 dropZone.addEventListener("drop", e => {
   e.preventDefault();
   dropZone.classList.remove("hover");
-  fileInput.files = e.dataTransfer.files;
-  showPreview();
+
+  if (e.dataTransfer.files.length) {
+    fileInput.files = e.dataTransfer.files;
+    showPreview(e.dataTransfer.files[0]);
+  }
 });
 
-fileInput.addEventListener("change", showPreview);
+fileInput.addEventListener("change", () => {
+  if (fileInput.files.length) {
+    showPreview(fileInput.files[0]);
+  }
+});
 
-function showPreview() {
-  const file = fileInput.files[0];
-  if (!file) return;
-  preview.style.display = "block";
+function showPreview(file) {
   previewImg.src = URL.createObjectURL(file);
+  preview.style.display = "block";
 }
 </script>
 
