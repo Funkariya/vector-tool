@@ -1,5 +1,4 @@
 import subprocess
-import os
 
 def convert_to_svg(input_img, output_svg, colors, smooth, remove_bg):
 
@@ -8,13 +7,7 @@ def convert_to_svg(input_img, output_svg, colors, smooth, remove_bg):
         input_img,
         "--export-type=svg",
         f"--export-filename={output_svg}",
-        "--trace-bitmap",
-        f"--trace-colors={colors}",
-        f"--trace-smooth={smooth}",
-        "--trace-optimize"
+        "--export-plain-svg"
     ]
-
-    if remove_bg:
-        cmd.append("--trace-remove-background")
 
     subprocess.run(cmd, check=True)
