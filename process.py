@@ -1,38 +1,41 @@
+import cv2
 import subprocess
 import os
-import shutil
+import uuid
 
 def convert_to_svg(input_img, output_svg, colors, smooth, remove_bg):
-    """
-    input_img  : uploaded raster image path
-    output_svg : final svg output path
-    colors     : number of colors (2,4,6,8)
-    smooth     : edge smoothness (0.5 – 2.0)
-    remove_bg  : True / False
-    """
 
-    # Safety check
-    if not os.path.exists(input_img):
-        raise FileNotFoundError("Input image not found")
+    temp_bmp = f"/tmp/{uuid.uuid4().hex}.bmp"
 
-    # Potrace works best on PGM/PPM → future ready
-    # For now direct PNG works (basic)
+    # Read image
+    img = cv2.imread(input_img)
+    if img is None:
+        raise Exception("Image not readable")
 
+    # Convert to grayscale
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    # Binary threshold (best for logos)
+    _, bw = cv2.threshold(
+        gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU
+    )
+
+    # Save BMP for potrace
+    cv2.imwrite(temp_bmp, bw)
+
+    # Potrace command
     cmd = [
         "potrace",
-        input_img,
-        "-s",                 # SVG output
+        temp_bmp,
+        "-s",
         "-o", output_svg,
-        "--turdsize", "2",    # remove small noise
-        "--alphamax", str(smooth),  # EDGE smoothness
-        "--opttolerance", "0.4"
+        "--turdsize", "5",
+        "--alphamax", str(smooth),
+        "--opttolerance", "0.2"
     ]
 
-    # NOTE:
-    # Potrace does NOT truly support "colors"
-    # Colors handling = Phase-3 (quantization before trace)
+    subprocess.run(cmd, check=True)
 
-    try:
-        subprocess.run(cmd, check=True)
-    except subprocess.CalledProcessError as e:
-        raise RuntimeError("Vector conversion failed") from e
+    # Cleanup
+    if os.path.exists(temp_bmp):
+        os.remove(temp_bmp)
