@@ -1,34 +1,14 @@
-import subprocess
-import os
-import uuid
+FROM python:3.10-slim
 
-def convert_to_svg(input_img, output_svg, colors=6, smooth=1.0, remove_bg=True):
+RUN apt-get update && apt-get install -y \
+    potrace \
+    imagemagick \
+    && rm -rf /var/lib/apt/lists/*
 
-    temp_pbm = f"/tmp/{uuid.uuid4().hex}.pbm"
+WORKDIR /app
+COPY . .
 
-    # STEP 1: Image cleanup + high-contrast bitmap
-    magick_cmd = [
-        "magick", input_img,
-        "-resize", "2000x2000>",
-        "-colorspace", "Gray",
-        "-auto-level",
-        "-threshold", "55%",
-        temp_pbm
-    ]
+RUN pip install --no-cache-dir -r requirements.txt
 
-    subprocess.run(magick_cmd, check=True)
-
-    # STEP 2: TRUE vector tracing (real paths)
-    potrace_cmd = [
-        "potrace",
-        temp_pbm,
-        "-s",
-        "-o", output_svg,
-        "-t", "3",
-        "-a", str(smooth),
-        "-O", "0.2"
-    ]
-
-    subprocess.run(potrace_cmd, check=True)
-
-    os.remove(temp_pbm)
+EXPOSE 10000
+CMD ["python", "app.py"]
